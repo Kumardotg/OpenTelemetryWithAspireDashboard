@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "VI+ov7Uk81ORQaUl0NTopgyNxqSxHEOA6AdHSKr/rmU=",
+  "Source": "OpenTelemetryWithAspireDashboard",
+  "BasePath": "_content/OpenTelemetryWithAspireDashboard",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
