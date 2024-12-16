@@ -1,16 +1,72 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetryWithAspireDashboard;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(o =>
+{
+    o.RequireHttpsMetadata = false;
+    o.Audience = builder.Configuration["Authentication:Audience"];
+    o.MetadataAddress = builder.Configuration["Authentication:MetadataAddress"];
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = builder.Configuration["Authentication:Issuer"]
+    };
+});
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+    options.AddSecurityDefinition("Keycloak", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OAuth2,
+        Flows = new OpenApiOAuthFlows
+        {
+            Implicit = new OpenApiOAuthFlow
+            {
+                AuthorizationUrl = new Uri("http://localhost:18080/realms/Keycloak-auth-demo/protocol/openid-connect/auth"),
+                Scopes = new Dictionary<string, string>
+                {
+                    { "openid", "openid" },
+                    { "profile", "profile" }
+                }
+            }
+        }
+    });
+
+    OpenApiSecurityScheme keycloakSecurityScheme = new()
+    {
+        Reference = new OpenApiReference
+        {
+            Id = "Keycloak",
+            Type = ReferenceType.SecurityScheme,
+        },
+        In = ParameterLocation.Header,
+        Name = "Bearer",
+        Scheme = "Bearer",
+    };
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { keycloakSecurityScheme, Array.Empty<string>() },
+    });
+
+});
 
 builder.Services.AddDbContext<CoffeeDbContext>(options =>
 {
@@ -63,7 +119,8 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast")
-.WithOpenApi();
+.WithOpenApi()
+.RequireAuthorization();
 
 app.MapPost("/Coffee", (CoffeeType coffeeType, CoffeeDbContext dbContext, ILogger<Program> logger) =>
 {

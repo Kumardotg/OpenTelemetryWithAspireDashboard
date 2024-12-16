@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OpenTelemetryWithAspireDashboard")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+be91c831d35568d94aea97e4ba9fbdbeb8dfe7c2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+570e6474990b99f42afb11d7d74b08dc85ab6933")]
 [assembly: System.Reflection.AssemblyProductAttribute("OpenTelemetryWithAspireDashboard")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OpenTelemetryWithAspireDashboard")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
